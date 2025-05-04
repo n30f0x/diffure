@@ -34,6 +34,7 @@ struct params {
   bool dry;
   bool finaled;
   bool outpath;
+  bool reverse;
   // int pathperms;
   // int fileperms;
   const char *editor;

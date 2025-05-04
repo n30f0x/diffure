@@ -32,15 +32,15 @@ static bool teststr(int (*funcptr)(int), char * testarr) {
       : (optarg != NULL))
      
 // getopts short
-const char *const short_opt = "pso:e:d:v::";
+const char *const short_opt = "psro:e:d:v::";
 // getopts long
 const struct option long_opt[] = {
   {"print",    0, NULL,         'p'},
   {"skip",     0, NULL,         's'},
+  {"reverse",  0, NULL,         'r'},
   {"output",   1, NULL,         'o'},
   {"editor",   1, NULL,         'e'},
   {"difftool", 1, NULL,         'd'},
-  {"temp",     1, NULL,         't'},
   {"verbose",  2, NULL,         'v'},
   {"help",     0, &helptrigger,  1 },
   { NULL,      0, NULL,          0 }
@@ -60,11 +60,12 @@ void usage(const char *arg0, ...) {
       "\\ \\ \\/\\ \\ \\ \\ \\  __\\ \\  __\\                 "                 "                   negated by output specification\n"
       " \\ \\____-\\ \\_\\ \\_\\  \\ \\_\\                   "                  " -o  --output      Where to put patchfiles, pwd is default\n"
       "  \\/____/ \\/_/\\/_/   \\/_/                   "                        " -s  --skip        Skip editing resulting patchfile\n"
-      "             __  __  ______  ______         "                            " -e  --editor      Editor of your choice, falls back to env vars if\n"
-      "            /\\ \\/\\ \\/\\  == \\/\\  ___\\        "                    "                   none supplied\n"
-      "            \\ \\ \\_\\ \\ \\  __<\\ \\  __\\        "                   " -d  --difftool    Diff tool of your preference, by default uses\n"
-      "             \\ \\_____\\ \\_\\ \\_\\ \\_____\\      "                   "                   *nix diff\n"
-      "              \\/_____/\\/_/ /_/\\/_____/      "                         "                   To pass arguments to either option use as \'tool -arg -arg\'\n"
+      "             __  __  ______  ______         "                            " -r  --reverse     Reverse order of diffed files\n"
+      "            /\\ \\/\\ \\/\\  == \\/\\  ___\\        "                    " -e  --editor      Editor of your choice, falls back to env vars if\n"
+      "            \\ \\ \\_\\ \\ \\  __<\\ \\  __\\        "                   "                   none supplied\n"
+      "             \\ \\_____\\ \\_\\ \\_\\ \\_____\\      "                   " -d  --difftool    Diff tool of your preference, by default uses\n"
+      "              \\/_____/\\/_/ /_/\\/_____/      "                         "                   *nix diff\n"
+      "                                            "                            "                   To pass arguments to either option use as \'tool -arg -arg\'\n"
       "                                            "                            " --help            Show this help message\n"
       "                                            "                            " --verbose         When you need all verbosity\n"
       "\n"
@@ -129,6 +130,9 @@ void setopts(int argc, char **argv, struct params *options, struct files *files,
   while ((next_opt = getopt_long(argc, argv, short_opt, long_opt, NULL)) != -1) {
     // const char *tmpoptarg = optarg;
     switch (next_opt) {
+      case 'r':
+        options->reverse = true;
+        break;
       case 'p':
         options->dry = true;
         if (options->target && !errcode) errcode = 25;

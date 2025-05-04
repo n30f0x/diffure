@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
 
     files.filefd = open(argv[i], O_RDONLY | O_CLOEXEC);
     if (files.filefd == -1) errproc(12);
-    if (!options.target) files.filepath = calloc(1, PATH_MAX);
     files.filepath = realpath(argv[i], NULL);
 
     /*---------------------------------- STAGE FINISHED ----------------------------------*/
@@ -55,7 +54,9 @@ int main(int argc, char *argv[]) {
         pathgen(5, &files.target, options.target, "/", basename(argv[i]), ".", FINALEXT);
       else
         pathgen(1, &files.target, options.target);
-      mkdir(dirname(strdup(files.target)), S_IRWXU | S_IRGRP | S_IWGRP | S_IROTH | S_IXOTH);
+      char *tmp = strdup(files.target); // on linux dirname func modifies the adressed value for some reason
+      mkdir(dirname(tmp), S_IRWXU | S_IRGRP | S_IWGRP | S_IROTH | S_IXOTH);
+      free(tmp);
       if (errno == EEXIST) errno = 0;
       files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_APPEND | O_FSYNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
     } else {
@@ -95,18 +96,17 @@ int main(int argc, char *argv[]) {
     execthing(2, 0, options.editor, files.tmppath);   
 
     // diff a thing
-    if (options.dry && !options.finaled) // make a diff without file
-      execthing(3, 0, options.difftool, files.filepath, files.tmppath);
-    else { // make a diff with output
-      execthing(3, files.targetfd, options.difftool, files.filepath, files.tmppath);
-      if (options.finaled) // edit result
-        execthing(2, 0, options.editor, files.target);
-      if (options.dry) { // out to shell
-        if (3 <= debug) fprintf(stderr, "[D] Dry output should be here\n");
-        copyfiles(files.targetfd, STDOUT_FILENO);
-        remove(files.target);
-        if (3 <= debug) fprintf(stderr, "[D] Target path deleted: %s\n", files.tmppath);
-      }
+    if (options.reverse)
+      execthing(3, (options.dry && !options.finaled) ? 0: files.targetfd, options.difftool, files.tmppath, files.filepath);
+    else 
+      execthing(3, (options.dry && !options.finaled) ? 0: files.targetfd, options.difftool, files.filepath, files.tmppath);
+    if (options.finaled) // edit result
+      execthing(2, 0, options.editor, files.target);
+    if (options.dry) { // out to shell
+      if (3 <= debug) fprintf(stderr, "[D] Dry output should be here\n");
+      copyfiles(files.targetfd, STDOUT_FILENO);
+      remove(files.target);
+      if (3 <= debug) fprintf(stderr, "[D] Target path deleted: %s\n", files.tmppath);
     }
 
     /*---------------------------------- STAGE FINISHED ----------------------------------*/
