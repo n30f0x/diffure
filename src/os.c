@@ -22,13 +22,18 @@ void copyfiles(int file_from, int file_to) {
 #elif __linux__
 
 void copyfiles(int file_from, int file_to) {
+	struct stat sbuf;
+	fstat(file_from, &sbuf);
+	off_t size = sbuf.st_size;
+
   if (3 <= debug) {fprintf(stderr, "[D] Sendfile from %i to %i\n", file_from, file_to);}
   if (2 > file_to)
     if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(20);
   off_t ret;
-  do
+  do {
     ret = copy_file_range(file_from, NULL, file_to, NULL, SIZE_MAX, 0);
-  while (ret > 0);
+    size-= ret;
+  } while (size > 0 && ret > 0);
   if (ret == 0) return;
   if (1 <= debug)
     fprintf(stderr, "[X] Copyfile file range failed with errno: %d\n", errno);
@@ -43,14 +48,13 @@ void copyfiles(int file_from, int file_to) {
 	int64_t off, nr, nw;
 	static size_t bsize;
 	static char *buf = NULL;
-	struct stat sbuf;
 
   if (fstat(file_to, &sbuf))
     fprintf(stderr, "fstat");
   bsize = 4096;
-    // bsize != 0 ? UNUSED() : fprintf(stderr, "bsize equals zero!");
-	if ((buf = malloc(bsize)) == NULL)
-  fprintf(stderr, "malloc() failure of IO buffer\n");
+  buf = malloc(bsize);
+	if (buf == NULL)
+    fprintf(stderr, "malloc() failure of IO buffer\n");
   while ((nr = read(file_from, buf, bsize)) > 0)
    for (off = 0; nr; nr -= nw, off += nw)
      if ((nw = write(file_to, buf + off, (size_t) nr)) < 0)	break;
@@ -58,6 +62,7 @@ void copyfiles(int file_from, int file_to) {
     perror(NULL);
     errproc(27);
   }
+  if (buf) free(buf);
 }
 
 #endif

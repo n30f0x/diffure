@@ -20,8 +20,11 @@ configurePhase = ''
   make dry
 '';
 
+buildPhase = ''
+  make  
+'';
+
 installPhase = ''
-  make
   mkdir -p $out/bin/
   cp build/diffure $out/bin/diffure
 '';

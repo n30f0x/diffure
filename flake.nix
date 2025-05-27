@@ -11,32 +11,19 @@
     };
   };
 
-  outputs = { nixpkgs, ... } :
-   let
-    
-      linuxSystems  = [ "x86_64-linux" "aarch64-linux" ];
-      darwinSystems = [ "x86_64-darwin" "aarch64-darwin" ];
-      allSystems = linuxSystems ++ darwinSystems;     
-      
-      forSystem = systemsIN: f: nixpkgs.lib.genAttrs systemsIN
+  outputs = { self, nixpkgs }:
+   let          
+      forSystem = f: nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed
        (system: f {
-          pkgs = import nixpkgs { inherit overlays system; };
-      }); 
-
-      overlays = [
-        (self: super: {
-        })
-      ];
-
+          pkgs = import nixpkgs { inherit system; };
+      });
    in {
-
-      packages = forSystem allSystems (
-      { pkgs }: rec
-       {
-        diffure = pkgs.callPackage ./default.nix { inherit pkgs; };
-        default = diffure;
-       } 
-      );
-
-    };
+        packages = forSystem (
+        { pkgs }: rec
+         {
+          diffure = pkgs.callPackage ./diffure.nix { inherit pkgs; };
+          default = diffure;
+         } 
+        );
+     };
 }
