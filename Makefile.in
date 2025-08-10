@@ -74,7 +74,7 @@ pack: ## Strip and pack executable
 	$(PACK) $(EXE) $(PACKFLAGS)
 	@echo "-------------- PACKING DONE --------------"
 
-setup: clean ## Setup build env
+setup: ## Setup build env
 	@mkdir -p $(OBJD)
 	@echo "--------------- SETUP DONE ---------------"
 

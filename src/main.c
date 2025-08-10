@@ -8,16 +8,18 @@
 //  main.c
 //
 
-#define VERSION "0.0.4"
-
+// autoconf
+// #include <config.h>
 // per os defines/includes/functions
 #include "os.h"
 // local includes
 #include "main.h"
 #include "args.h"
+#include "errors.h"
 #include "helpers.h"
 
 
+int debug = 0;
 
 int main(int argc, char *argv[]) {
 // run options live here

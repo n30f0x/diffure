@@ -14,7 +14,9 @@
 Allows you to make patches on the go with your fav ide or editor.
 
 To run with nix just run `nix shell github:n30f0x/diffure`
+Before building run `autoreconf --install && ./configure`
 To navigate through make run `make help`
+
 
 This tool allows you to easily make patches as if you were editing file directly, so you could apply results later in declarative way.
 

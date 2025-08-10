@@ -1,3 +1,5 @@
+// autoconf
+// #include "../config.h"
 // per os defines
 #include "os.h"
 // local includes
@@ -48,7 +50,7 @@ void pathgen(size_t cnt, char *restrict *fileout, ... ) {
   int i;
   for (i = 0; i < cnt; i++) {
     const char *tmpbuf = va_arg(args, char *);
-    if (sanstr(false, (char *)tmpbuf)) errproc(25);
+    if (sanstr(false, (char *)tmpbuf)) errproc(WRONG_ARG);
     strsz += strlen(tmpbuf);
     strlcat(buf, tmpbuf, bufsz);
   }
@@ -89,6 +91,6 @@ void execthing(size_t cnt, int fd, ...) {
   free(argList);
   wait(&statloc);
   if (statloc > 0 && statloc != 256) {
-    errno = statloc; errproc(28);
+    errno = statloc; errproc(EXEC_FAIL);
   }
 }
