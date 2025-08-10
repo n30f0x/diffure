@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "errors.h"
 
 extern int debug;
 

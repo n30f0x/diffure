@@ -1,3 +1,5 @@
+// autoconf
+// #include <config.h>
 // per os libs and defines
 #ifdef __APPLE__
 
@@ -9,9 +11,6 @@
 
   // copyfiles
   #include <copyfile.h>
-
-#elif __WIN32__
-  #include <windows.h>
 
 #elif __linux__
 

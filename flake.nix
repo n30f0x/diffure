@@ -21,7 +21,7 @@
         packages = forSystem (
         { pkgs }: rec
          {
-          diffure = pkgs.callPackage ./diffure.nix { inherit pkgs; };
+          diffure = pkgs.callPackage ./. { inherit pkgs; };
           default = diffure;
          } 
         );

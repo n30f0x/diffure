@@ -49,9 +49,9 @@ void copyfiles(int file_from, int file_to) {
 	static size_t bsize;
 	static char *buf = NULL;
 
-  if (fstat(file_to, &sbuf))
-    fprintf(stderr, "fstat");
-  bsize = 4096;
+  // if (fstat(file_to, &sbuf))
+  //   fprintf(stderr, "fstat");
+  bsize = 1048576;
   buf = malloc(bsize);
 	if (buf == NULL)
     fprintf(stderr, "malloc() failure of IO buffer\n");
