@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     }
 
     files.filefd = open(argv[i], O_RDONLY | O_CLOEXEC);
-    if (files.filefd == -1) errproc(12);
+    if (files.filefd == -1) errproc(FILE_INVALID);
     files.filepath = realpath(argv[i], NULL);
 
     /*---------------------------------- STAGE FINISHED ----------------------------------*/
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     }
     
     if (3 <= debug) fprintf(stderr, "[D] Target path: %s\n", files.target);
-    if (files.targetfd == -1) errproc(15); 
+    if (files.targetfd == -1) errproc(OUTPUT_EXISTS); 
 
     /*---------------------------------- STAGE FINISHED ----------------------------------*/
 

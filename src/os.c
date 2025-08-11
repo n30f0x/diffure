@@ -8,12 +8,12 @@
 void copyfiles(int file_from, int file_to) {
   if (3 <= debug) {fprintf(stderr, "[D] Copyfile from %i to %i\n", file_from, file_to);}
   if (2 > file_to)
-    if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(20);
+    if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(IO);
   copyfile_state_t copyfilet = copyfile_state_alloc();
   if (3 <= debug) {fprintf(stderr, "[D] Copyfile state allocated, sending file...\n");}
   if (fcopyfile(file_from, file_to, copyfilet, COPYFILE_ALL | COPYFILE_CLONE | COPYFILE_EXCL) != 0) {
     perror(NULL);
-    errproc(27);
+    errproc(FILE_COPY);
   };
   copyfile_state_free(copyfilet);
   if (3 <= debug) {fprintf(stderr, "[D] Copyfile state freed\n");}
@@ -28,7 +28,7 @@ void copyfiles(int file_from, int file_to) {
 
   if (3 <= debug) {fprintf(stderr, "[D] Sendfile from %i to %i\n", file_from, file_to);}
   if (2 > file_to)
-    if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(20);
+    if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(IO);
   off_t ret;
   do {
     ret = copy_file_range(file_from, NULL, file_to, NULL, SIZE_MAX, 0);
@@ -44,7 +44,7 @@ void copyfiles(int file_from, int file_to) {
     fprintf(stderr, "[X] Copyfile sendfile failed\n"
                     "[V] Copyfile cat fallback used\n"); */
   if (2 > file_to)
-    if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(20);
+    if (-1 == lseek(file_from, 0, SEEK_SET)) errproc(IO);
 	int64_t off, nr, nw;
 	static size_t bsize;
 	static char *buf = NULL;
@@ -60,7 +60,7 @@ void copyfiles(int file_from, int file_to) {
      if ((nw = write(file_to, buf + off, (size_t) nr)) < 0)	break;
   if (nr < 0) {
     perror(NULL);
-    errproc(27);
+    errproc(FILE_COPY);
   }
   if (buf) free(buf);
 }
