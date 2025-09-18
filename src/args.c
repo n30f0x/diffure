@@ -131,8 +131,11 @@ static char *envchoice (int envc, const char **envs) {
 }
 
 void setenvs(struct params *options) {
+  const char *prefixvar[] = {"PREFIX"};
   const char *editorvars[] = {"VISUAL", "EDITOR"};
   // get defaults from env vars, fallback to simple text mode
   if(!options->editor) options->editor = envchoice((sizeof(editorvars)/sizeof(char *)), editorvars);
   if(!options->editor) errproc(errcode = NO_EDITOR);
+  if(!options->prefix) options->editor = envchoice((sizeof(prefixvar)/sizeof(char *)), prefixvar);
+  if(!options->prefix) errproc(errcode = NO_PATH);
 }
