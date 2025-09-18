@@ -28,8 +28,7 @@ int main(int argc, char *argv[]) {
     .finaled     = true,
     .outpath     = false,
     .difftool    = "diff",
-    .placeholder = PLACEHOLDER,
-    .prefix      = "/"
+    .placeholder = PLACEHOLDER
   };
   struct files files;
 
@@ -64,10 +63,10 @@ int main(int argc, char *argv[]) {
       files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_APPEND | O_FSYNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
     } else {
       if (options.dry) {
-        pathgen(6, &files.target, options.prefix, TMPDIR, "/", basename(argv[i]), ".", (char *)options.placeholder);
+        pathgen(5, &files.target, TMPDIR, "/", basename(argv[i]), ".", (char *)options.placeholder);    
         files.targetfd = mkostemps(files.target, 0, 0);
       } else {
-        pathgen(5, &files.target, getcwd(files.target, PATH_MAX), "/", basename(argv[i]), ".", FINALEXT);
+        pathgen(5, &files.target, getcwd(files.target, PATH_MAX), "/", basename(argv[i]), ".", FINALEXT);    
         files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_EXCL | O_FSYNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
       }
     }
@@ -79,7 +78,7 @@ int main(int argc, char *argv[]) {
 
     // make a tmp file using template
     files.tmppath = calloc(1, PATH_MAX); // make a name template
-    pathgen(6, &files.tmppath, options.prefix, TMPDIR, "/", basename(files.filepath), ".", (char *)options.placeholder);
+    pathgen(5, &files.tmppath, TMPDIR, "/", basename(files.filepath), ".", (char *)options.placeholder);
     files.tmpfd = mkostemps(files.tmppath, 0, 0);
 
     /*---------------------------------- STAGE FINISHED ----------------------------------*/
