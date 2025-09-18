@@ -92,22 +92,6 @@ void setopts(int argc, char **argv, struct params *options, struct files *files,
         break;
     }
   }
-  if (2 <= debug) {
-    fprintf(stderr,
-            "[D] Debug: opts ingested:\n"
-            "------------------------\n"
-            "    Debugging: %u \n"
-            "    Difftool: %s\n"
-            "    Editor: %s\n"
-            "    Output to shell: %d\n"
-            "    Output to: %s\n"
-            "    Output is path: %u\n"
-            "    Result editing: %d\n"
-            "    Max path size: %d\n"
-            "------------------------\n",
-    debug, options->difftool, options->editor, options->dry, options->target, options->outpath, options->finaled, PATH_MAX);
-  }
-
   if (helptrigger || argv[optind] == NULL) errcode = SHOW_HELP;
   if (errcode) errproc(errcode);
 }
@@ -131,11 +115,18 @@ static char *envchoice (int envc, const char **envs) {
 }
 
 void setenvs(struct params *options) {
-  const char *prefixvar[] = {"PREFIX"};
-  const char *editorvars[] = {"VISUAL", "EDITOR"};
-  // get defaults from env vars, fallback to simple text mode
+  // get defaults from env vars, fallback to simple modes
+  const char *prefixvar = "PREFIX";
+  if(!options->prefix) options->prefix = envchoice((sizeof(prefixvar)/sizeof(char *)), &prefixvar);
+  if(!options->prefix) options->prefix = "/";
+
+  const char *editorvars[] = {
+    "DIFFURE_EDITOR", "VISUAL", "EDITOR"
+  };
   if(!options->editor) options->editor = envchoice((sizeof(editorvars)/sizeof(char *)), editorvars);
   if(!options->editor) errproc(errcode = NO_EDITOR);
-  if(!options->prefix) options->editor = envchoice((sizeof(prefixvar)/sizeof(char *)), prefixvar);
-  if(!options->prefix) errproc(errcode = NO_PATH);
+
+  const char *difftoolvar = "DIFFURE_DIFF";
+  if(!options->difftool) options->difftool = envchoice((sizeof(prefixvar)/sizeof(char *)), &difftoolvar);
+  if(!options->difftool) options->difftool = "diff";
 }

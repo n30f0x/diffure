@@ -1,7 +1,7 @@
 		 BUILD   := build
+		 SRCD    := @srcdir@/src
+		 EXENAME := @PACKAGE_NAME@
 override OBJD    := $(BUILD)/obj
-		 SRCD    := src
-		 EXENAME := diffure
 override EXE     := $(BUILD)/$(EXENAME)
 
 		 SRC     := $(wildcard $(SRCD)/*.c)
@@ -13,11 +13,11 @@ override TESTOBJ := $(patsubst $(OBJ)/%.o,$(OBJD)/%.gcno,$(OBJ))
 
 SETTINGS    =
 
-CC         ?= gcc
-LD         ?= gcc
+CC         ?= @CC@
+LD         ?= @LD@
 CFLAGS     += -Wall -Wpedantic -Wconversion -fPIE -pie
 LDFLAGS    +=
-ASAN_FLAGS += -fsanitize=undefined,null,alignment,builtin -fstack-check -fstrict-flex-arrays=3
+ASAN_FLAGS += -fsanitize=undefined,null,alignment,builtin -fstrict-flex-arrays=3
 ASANCC_FLAGS += $(ASAN_FLAGS) -fstack-protector-strong
 ASANLD_FLAGS += $(ASAN_FLAGS) -fstack-clash-protection -dead-strip
 INST       ?= gcov
@@ -48,7 +48,7 @@ test: LDFLAGS += $(ASANLD_FLAGS) --coverage
 #test: OBJ += $(TOBJ)
 #test: CFLAGS += -finstrument-functions
 #test: LDFLAGS += -finstrument-functions
-test: debug
+test: clean debug
 	@touch $(BUILD)/testfile $(BUILD)/testfile2
 	$(EXE) -v -e echo -d 'echo meow mrp' -p $(BUILD)/testfile
 	@echo "--------------- RUN1  DONE ---------------"
@@ -77,6 +77,19 @@ pack: ## Strip and pack executable
 setup: ## Setup build env
 	@mkdir -p $(OBJD)
 	@echo "--------------- SETUP DONE ---------------"
+
+reconf: ## Reconf build env
+reconf: reconf-clean
+	@autoreconf --install
+	@./configure
+	@echo "-------------- RECONF DONE ---------------"
+
+reconf-clean: ## Reconf cleanup
+reconf-clean:
+	@rm -rf autom4te.cache
+	@rm config.*
+	@rm configure Makefile
+	@echo "----------- CONF CLEAN DONE --------------"
 
 clean: ## Clean built env
 	@rm -rf $(BUILD)
