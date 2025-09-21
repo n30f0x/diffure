@@ -6,7 +6,7 @@ define([AC_CACHE_LOAD], )dnl
 define([AC_CACHE_SAVE], )dnl
 
 AC_PREREQ([2.72])
-AC_INIT([diffure], [0.0.6], [github.com/n30f0x/diffure])
+AC_INIT([diffure], [0.0.5], [github.com/n30f0x/diffure])
 
 # Checks for programs.
 AC_PROG_CC
