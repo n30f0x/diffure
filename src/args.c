@@ -116,10 +116,6 @@ static char *envchoice (int envc, const char **envs) {
 
 void setenvs(struct params *options) {
   // get defaults from env vars, fallback to simple modes
-  const char *prefixvar = "PREFIX";
-  if(!options->prefix) options->prefix = envchoice((sizeof(prefixvar)/sizeof(char *)), &prefixvar);
-  if(!options->prefix) options->prefix = "/";
-
   const char *editorvars[] = {
     "DIFFURE_EDITOR", "VISUAL", "EDITOR"
   };

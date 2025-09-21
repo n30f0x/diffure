@@ -22,6 +22,9 @@ To navigate through make run `make help`
 
 This tool allows you to easily make patches as if you were editing file directly, so you could apply results later in declarative way.
 
+
+`DIFFURE_EDITOR` and `DIFFURE_DIFF` env vars could be pointed at your fave tools.
+
 Usage: diffure | options | file ... file
 
 -p  --print:      Print patch into stdout, don't generate file,
@@ -38,4 +41,5 @@ Usage: diffure | options | file ... file
 
 -d  --difftool:   Diff tool of your preference, by default uses
                   *nix diff
-                  To pass arguments to either option use as 'tool -arg -arg'
+                  To pass arguments to either option use as
+                  'tool -arg -arg'
