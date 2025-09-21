@@ -27,37 +27,14 @@ int main(int argc, char *argv[]) {
     .dry         = false,
     .finaled     = true,
     .outpath     = false,
-    .placeholder = PLACEHOLDER,
+    .difftool    = "diff",
+    .placeholder = PLACEHOLDER
   };
   struct files files;
 
   setopts(argc, argv, &options, &files);
   setenvs(&options);
-  if (2 <= debug) {
-    fprintf(stderr,
-      "[D] Debug: opts ingested:\n"
-      "------------------------\n"
-      "    Debugging: %u \n"
-      "    Difftool: %s\n"
-      "    Editor: %s\n"
-      "    Prefix/TMP: %s\n"
-      "    Output to: %s\n"
-      "    Output to shell: %d\n"
-      "    Output is path: %u\n"
-      "    Result editing: %d\n"
-      "    Max path size: %d\n"
-      "------------------------\n",
-    debug,
-    options.difftool,
-    options.editor,
-    TMPDIR,
-    options.target,
-    options.dry,
-    options.outpath,
-    options.finaled,
-    PATH_MAX);
-  };
-
+ 
 // main cycle
   int i = optind;
   do {
@@ -83,26 +60,14 @@ int main(int argc, char *argv[]) {
       mkdir(dirname(tmp), S_IRWXU | S_IRGRP | S_IWGRP | S_IROTH | S_IXOTH);
       free(tmp);
       if (errno == EEXIST) errno = 0;
-      files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_APPEND
-#ifdef USE_FSYNC
-          | O_FSYNC
-#elif  USE_SYNC
-          | O_SYNC
-#endif
-          , S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+      files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_APPEND | O_FSYNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
     } else {
       if (options.dry) {
-        pathgen(5, &files.target, TMPDIR, "/", basename(argv[i]), ".", (char *)options.placeholder);
+        pathgen(5, &files.target, TMPDIR, "/", basename(argv[i]), ".", (char *)options.placeholder);    
         files.targetfd = mkostemps(files.target, 0, 0);
       } else {
-        pathgen(5, &files.target, getcwd(files.target, PATH_MAX), "/", basename(argv[i]), ".", FINALEXT);
-        files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_EXCL
-#ifdef USE_FSYNC
-          | O_FSYNC
-#elif  USE_SYNC
-          | O_SYNC
-#endif
-          , S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+        pathgen(5, &files.target, getcwd(files.target, PATH_MAX), "/", basename(argv[i]), ".", FINALEXT);    
+        files.targetfd = open(files.target, O_RDWR | O_CREAT | O_EXLOCK | O_EXCL | O_FSYNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
       }
     }
     
