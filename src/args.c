@@ -123,6 +123,6 @@ void setenvs(struct params *options) {
   if(!options->editor) errproc(errcode = NO_EDITOR);
 
   const char *difftoolvar = "DIFFURE_DIFF";
-  if(!options->difftool) options->difftool = envchoice((sizeof(prefixvar)/sizeof(char *)), &difftoolvar);
+  if(!options->difftool) options->difftool = envchoice((sizeof(difftoolvar)/sizeof(char *)), &difftoolvar);
   if(!options->difftool) options->difftool = "diff";
 }
