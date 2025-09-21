@@ -37,24 +37,39 @@ AC_CHECK_DECLS([__linux__], [
   target_os=linux
 
   AC_DEFINE([_GNU_SOURCE], 1, "Use gnu source style")
-  AC_DEFINE([O_EXLOCK], [F_EXLCK], "TODO: fix")
-  AC_DEFINE([PATH_MAX], [1024], "Ensure path size is correct")
-  AC_DEFINE([MAX_INPUT], [1024], "Use sufficient")
-  AC_DEFINE([BUFSIZE], [4096*1000], "Use buffer of sufficient size")
 
+  AC_DEFINE([BUFSIZE], [4096*1000], "Use buffer of sufficient size")
   AC_DEFINE([PLACEHOLDER], "XXXXXX", "Placeholder")
   AC_DEFINE([PLACEHOLDERLEN], [6], "Placeholder length")
+
+	AC_PREPROC_IFELSE(
+	  [AC_LANG_PROGRAM([[const uint32_t test = PATH_MAX;]],
+	                   [[fprinf (stdout, "%lu", test);]])],
+		[], [
+		AC_MSG_NOTICE("PATH_MAX not found! Defaulting to 1024")
+	  AC_DEFINE([PATH_MAX], [1024], "Ensure path size is correct")
+	])
+
+	AC_PREPROC_IFELSE(
+    [AC_LANG_PROGRAM([[const uint32_t test = MAX_INPUT;]],
+                     [[fprinf (stdout, "%lu", test);]])],
+		[], [
+		AC_MSG_NOTICE("MAX_INPUT not found! Defaulting to 1024")
+		AC_DEFINE([MAX_INPUT], [1024], "Use sufficient")
+	])
+
+  AC_DEFINE([O_EXLOCK], [F_EXLCK], "TODO: fix")
   
 	AC_DEFINE([CATIMPL], 1, "Use fallback")
-  AC_SEARCH_LIBS([copy_file_range], [stdlib.h sys/sendfile.h], [
-			AC_DEFINE([COPYFILERANGE], 1, "Use copyfilerange implementation")
-		  AC_DEFINE([CATFALLBACK], 1, "Use fallback")
-		], [
+	AC_CHECK_FUNC([copy_file_range], [
+		AC_DEFINE([COPYFILERANGE], 1, "Use copyfilerange implementation")
+	  AC_DEFINE([CATFALLBACK], 1, "Use fallback")
+	], [
   	AC_MSG_WARN("Copy_file_range not found!")
-		AC_SEARCH_LIBS([sendfile], [stdlib.h sys/sendfile.h], [
+		AC_CHECK_FUNC([sendfile], [
 			AC_DEFINE([SENDFILE], 1, "Use copyfilerange implementation")
 			AC_DEFINE([CATFALLBACK], 1, "Use fallback")
-			], [
+		], [
 			AC_MSG_WARN([UNABLE TO FIND FILE TRANSFER FUNC! USING DUMMY METHOD!])
 		])
 	])
@@ -66,8 +81,15 @@ if test "$target_os" = linux || test "$target_os" = macos;
   AC_CHECK_HEADERS_ONCE([getopt.h libgen.h ctype.h])
   AC_CHECK_FUNCS([dup2 getcwd mkdir realpath strdup strstr])
 
-	AC_DEFINE([HOME], "HOME=", "Home dir")
-	AC_DEFINE([PATH], "PATH=", "Path")
+	AC_PREPROC_IFELSE(
+		[AC_LANG_PROGRAM([[const uint32_t test = O_FSYNC;]],
+	                   [[fprinf (stdout, "%lu", test);]])],
+			[AC_MSG_NOTICE("O_FSYNC found!")
+			AC_DEFINE([USE_FSYNC], 1, "Use fs background")
+	 		], [
+			AC_MSG_NOTICE("O_FSYNC not found!")
+			AC_DEFINE([USE_SYNC], 1, "Use os background")
+	])
 
 	AC_ARG_VAR([PREFIX], [Check env prefix])
   if test "${PREFIX+set}" = set; then
@@ -78,13 +100,8 @@ if test "$target_os" = linux || test "$target_os" = macos;
 		AC_DEFINE([TMPDIR], "/tmp", "Tmp dir")
   fi
 
-	AC_SEARCH_LIBS([O_FSYNC], [fcntl.h unistd.h], [
-		AC_MSG_NOTICE("O_FSYNC found!")
-		AC_DEFINE([USE_FSYNC], 1, "Use fs background")
-	], [
-		AC_MSG_NOTICE("O_FSYNC not found!")
-		AC_DEFINE([USE_SYNC], 1, "Use os background")
-	]) 
+	AC_DEFINE([HOME], "HOME=", "Home dir")
+	AC_DEFINE([PATH], "PATH=", "Path")
 fi
 
 if test "x$target_os" = "x"; then
@@ -93,9 +110,11 @@ if test "x$target_os" = "x"; then
   AC_DEFINE([_GNU_SOURCE], 1, "Use gnu source style")
   AC_DEFINE([PLACEHOLDER], "XXXXXX", "Placeholder")
   AC_DEFINE([PLACEHOLDERLEN], [6], "Placeholder length")
+
   AC_DEFINE([PATH_MAX], [1024], "Ensure path size is correct")
   AC_DEFINE([MAX_INPUT], [1024], "Use sufficient")
   AC_DEFINE([BUFSIZE], [4096*1000], "Use buffer of sufficient size")
+
   AC_DEFINE([TMPDIR], "/tmp", "Tmp dir")
   AC_DEFINE([HOME], "HOME=", "Home dir")
   AC_DEFINE([PATH], "PATH=", "Path")

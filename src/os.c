@@ -45,7 +45,7 @@ void copyfiles(int file_from, int file_to) {
 #endif
 
 #ifdef SENDFILE
-  int flag = sendfile(file_from, file_to, 0, 0);
+  ssize_t flag = sendfile(file_from, file_to, 0, 0);
   if (flag == 0)
    return;
   if (1 <= debug)
@@ -66,9 +66,6 @@ void copyfiles(int file_from, int file_to) {
 
 	int64_t off, nr, nw;
 	static char *buf = NULL;
-
-  if (fstat(file_to, &sbuf))
-    fprintf(stderr, "fstat");
 
 	static size_t bsize = 1048576;
 
