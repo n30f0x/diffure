@@ -42,18 +42,12 @@ AC_CHECK_DECLS([__linux__], [
   AC_DEFINE([PLACEHOLDER], "XXXXXX", "Placeholder")
   AC_DEFINE([PLACEHOLDERLEN], [6], "Placeholder length")
 
-	AC_PREPROC_IFELSE(
-	  [AC_LANG_PROGRAM([[const uint32_t test = PATH_MAX;]],
-	                   [[fprinf (stdout, "%lu", test);]])],
-		[], [
+	AC_CHECK_DECLS([PATH_MAX], [], [
 		AC_MSG_NOTICE("PATH_MAX not found! Defaulting to 1024")
 	  AC_DEFINE([PATH_MAX], [1024], "Ensure path size is correct")
 	])
 
-	AC_PREPROC_IFELSE(
-    [AC_LANG_PROGRAM([[const uint32_t test = MAX_INPUT;]],
-                     [[fprinf (stdout, "%lu", test);]])],
-		[], [
+	AC_CHECK_DECLS([MAX_INPUT], [], [
 		AC_MSG_NOTICE("MAX_INPUT not found! Defaulting to 1024")
 		AC_DEFINE([MAX_INPUT], [1024], "Use sufficient")
 	])
