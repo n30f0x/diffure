@@ -52,5 +52,6 @@ struct params {
   const char *editor;
   const char *difftool;
   const char *placeholder;
+  const char *prefix;
   const char *target;
 };
