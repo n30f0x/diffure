@@ -55,9 +55,9 @@ AC_CHECK_DECLS([__linux__], [
   AC_DEFINE([O_EXLOCK], [F_EXLCK], "TODO: fix")
   
 	AC_DEFINE([CATIMPL], 1, "Use fallback")
-	AC_CHECK_FUNC([copy_file_range], [
+	AC_CHECK_DECLS([copy_file_range], [
 		AC_DEFINE([COPYFILERANGE], 1, "Use copyfilerange implementation")
-	  AC_DEFINE([CATFALLBACK], 1, "Use fallback")
+		AC_DEFINE([CATFALLBACK], 1, "Use fallback")
 	], [
   	AC_MSG_WARN("Copy_file_range not found!")
 		AC_CHECK_FUNC([sendfile], [
@@ -75,17 +75,21 @@ if test "$target_os" = linux || test "$target_os" = macos;
   AC_CHECK_HEADERS_ONCE([getopt.h libgen.h ctype.h])
   AC_CHECK_FUNCS([dup2 getcwd mkdir realpath strdup strstr])
 
-	AC_PREPROC_IFELSE(
-		[AC_LANG_PROGRAM([[const uint32_t test = O_FSYNC;]],
-	                   [[fprinf (stdout, "%lu", test);]])],
-			[AC_MSG_NOTICE("O_FSYNC found!")
-			AC_DEFINE([USE_FSYNC], 1, "Use fs background")
-	 		], [
-			AC_MSG_NOTICE("O_FSYNC not found!")
-			AC_DEFINE([USE_SYNC], 1, "Use os background")
-	])
+  AC_CHECK_DECLS([O_FSYNC],
+    [AC_PREPROC_IFELSE(
+	[AC_LANG_PROGRAM([[const uint32_t test = O_FSYNC;]],
+	                [[fprinf (stdout, "%lu", test);]])],
+		[AC_MSG_NOTICE("O_FSYNC found!")
+		AC_DEFINE([USE_FSYNC], 1, "Use fs background")
+	], [
+		AC_MSG_NOTICE("O_FSYNC not found!")
+		AC_DEFINE([USE_SYNC], 1, "Use os background")
+	])],[
+	AC_MSG_NOTICE("O_FSYNC not found!")
+	AC_DEFINE([USE_SYNC], 1, "Use os background")
+  ])
 
-	AC_ARG_VAR([PREFIX], [Check env prefix])
+  AC_ARG_VAR([PREFIX], [Check env prefix])
   if test "${PREFIX+set}" = set; then
 		AC_DEFINE_UNQUOTED([TMPDIR], ["$PREFIX/tmp"], "Tmp dir")
 		AC_MSG_NOTICE("Non-standard prefix found!")
@@ -94,8 +98,8 @@ if test "$target_os" = linux || test "$target_os" = macos;
 		AC_DEFINE([TMPDIR], "/tmp", "Tmp dir")
   fi
 
-	AC_DEFINE([HOME], "HOME=", "Home dir")
-	AC_DEFINE([PATH], "PATH=", "Path")
+  AC_DEFINE([HOME], "HOME=", "Home dir")
+  AC_DEFINE([PATH], "PATH=", "Path")
 fi
 
 if test "x$target_os" = "x"; then
