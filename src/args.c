@@ -32,18 +32,19 @@ static bool teststr(int (*funcptr)(int), char * testarr) {
       : (optarg != NULL))
      
 // getopts short
-const char *const short_opt = "psro:e:d:v::";
+const char *const short_opt = "psrno:e:d:v::";
 // getopts long
 const struct option long_opt[] = {
-  {"print",    0, NULL,         'p'},
-  {"skip",     0, NULL,         's'},
-  {"reverse",  0, NULL,         'r'},
-  {"output",   1, NULL,         'o'},
-  {"editor",   1, NULL,         'e'},
-  {"difftool", 1, NULL,         'd'},
-  {"verbose",  2, NULL,         'v'},
-  {"help",     0, &helptrigger,  1 },
-  { NULL,      0, NULL,          0 }
+  {"print",       0, NULL,         'p'},
+  {"skip",        0, NULL,         's'},
+  {"reverse",     0, NULL,         'r'},
+  {"no-interact", 0, NULL,         'n'},
+  {"output",      1, NULL,         'o'},
+  {"editor",      1, NULL,         'e'},
+  {"difftool",    1, NULL,         'd'},
+  {"verbose",     2, NULL,         'v'},
+  {"help",        0, &helptrigger,  1 },
+  { NULL,         0, NULL,          0 }
 };
 
 // internal helper
@@ -81,6 +82,9 @@ void setopts(int argc, char **argv, struct params *options, struct files *files,
           debug = atoi(optarg);
         else
           debug = 1;
+        break;
+      case 'n':
+        options->interactive = false;
         break;
       case '?':
       case 1:
@@ -125,4 +129,7 @@ void setenvs(struct params *options) {
   const char *difftoolvar = "DIFFURE_DIFF";
   if(!options->difftool) options->difftool = envchoice((sizeof(difftoolvar)/sizeof(char *)), &difftoolvar);
   if(!options->difftool) options->difftool = "diff";
+
+  const char *interactivevar = "DIFFURE_NOINTERACT";
+  if (options->interactive && envchoice((sizeof(interactivevar)/sizeof(char *)), &interactivevar)) options->interactive =  false;
 }

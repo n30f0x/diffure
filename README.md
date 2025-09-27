@@ -22,8 +22,9 @@ To navigate through make run `make help`
 
 This tool allows you to easily make patches as if you were editing file directly, so you could apply results later in declarative way.
 
-
+Env vars:
 `DIFFURE_EDITOR` and `DIFFURE_DIFF` env vars could be pointed at your fave tools.
+`DIFFURE_NOINTERACT` env var set to anything would result in no-interact mode.
 
 Usage: diffure | options | file ... file
 
@@ -35,6 +36,8 @@ Usage: diffure | options | file ... file
 -s  --skip:       Skip editing resulting patchfile
 
 -r  --reverse:    Reverse order of diffed files
+
+-n  --no-interact Don't redirect stdout to stderr for interactive editors
 
 -e  --editor:     Editor of your choice, falls back to env vars if
                   none supplied

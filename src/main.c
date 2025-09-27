@@ -27,17 +27,21 @@ int main(int argc, char *argv[]) {
     .dry         = false,
     .finaled     = true,
     .outpath     = false,
+    .interactive = true,
     .placeholder = PLACEHOLDER,
   };
   struct files files;
 
   setopts(argc, argv, &options, &files);
   setenvs(&options);
+  files.outfd = (options.interactive) ? fileno(stderr) : 0;
+
   if (2 <= debug) {
     fprintf(stderr,
       "[D] Debug: opts ingested:\n"
       "------------------------\n"
       "    Debugging: %u \n"
+      "    Interactive: %d\n"
       "    Difftool: %s\n"
       "    Editor: %s\n"
       "    Prefix/TMP: %s\n"
@@ -48,6 +52,7 @@ int main(int argc, char *argv[]) {
       "    Max path size: %d\n"
       "------------------------\n",
     debug,
+    options.interactive,
     options.difftool,
     options.editor,
     TMPDIR,
@@ -130,18 +135,19 @@ int main(int argc, char *argv[]) {
     /*---------------------------------- STAGE FINISHED ----------------------------------*/
 
     // make a patch
-    execthing(2, 0, options.editor, files.tmppath);   
+    execthing(2, files.outfd, options.editor, files.tmppath);
 
     // diff a thing
     if (options.reverse)
       execthing(3, (options.dry && !options.finaled) ? 0: files.targetfd, options.difftool, files.tmppath, files.filepath);
     else 
       execthing(3, (options.dry && !options.finaled) ? 0: files.targetfd, options.difftool, files.filepath, files.tmppath);
+
     if (options.finaled) // edit result
-      execthing(2, 0, options.editor, files.target);
+      execthing(2, files.outfd, options.editor, files.target);
     if (options.dry) { // out to shell
       if (3 <= debug) fprintf(stderr, "[D] Dry output should be here\n");
-      copyfiles(files.targetfd, STDOUT_FILENO);
+      copyfiles(files.targetfd, fileno(stdout));
       remove(files.target);
       if (3 <= debug) fprintf(stderr, "[D] Target path deleted: %s\n", files.tmppath);
     }

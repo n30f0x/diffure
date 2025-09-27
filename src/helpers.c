@@ -16,8 +16,8 @@ void *strictrealloc(void *ptr, size_t sz){
   return newptr;
 }
 
-int sanstr(int mode, char *restrict str) {
-  int verdict = 0;  // selected mode will result in either distructive
+uint sanstr(int mode, char *restrict str) {
+  uint verdict = 0;  // selected mode will result in either distructive
   while (*str++)    // or nondestructive behavior
     switch (*str){
       case '\n':
@@ -84,7 +84,7 @@ void execthing(size_t cnt, int fd, ...) {
   if (3 <= debug) fprintf(stderr, "\n[D] Total args: %d\n", arglen);
 
   if (!fork()) {
-    if (fd) dup2(fd, 1); // redirect stdout to a file
+    if (fd) dup2(fd, fileno(stdout)); // redirect stdout to a file
     execvp(argList[0], (char *const *)argList);
   };
 

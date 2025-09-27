@@ -39,6 +39,7 @@ struct files {
   int filefd;
   int tmpfd;
   int targetfd;
+  int outfd;
   char *filepath;
   char *tmppath;
   char *target;
@@ -49,6 +50,7 @@ struct params {
   bool finaled;
   bool outpath;
   bool reverse;
+  bool interactive;
   const char *editor;
   const char *difftool;
   const char *placeholder;
