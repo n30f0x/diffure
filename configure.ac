@@ -6,7 +6,7 @@ define([AC_CACHE_LOAD], )dnl
 define([AC_CACHE_SAVE], )dnl
 
 AC_PREREQ([2.72])
-AC_INIT([diffure], [0.0.6], [github.com/n30f0x/diffure])
+AC_INIT([diffure], [0.0.7], [github.com/n30f0x/diffure])
 
 # Checks for programs.
 AC_PROG_CC
@@ -76,30 +76,26 @@ if test "$target_os" = linux || test "$target_os" = macos;
   AC_CHECK_FUNCS([dup2 getcwd mkdir realpath strdup strstr])
 
   AC_CHECK_DECLS([O_FSYNC],
-    [AC_PREPROC_IFELSE(
-	[AC_LANG_PROGRAM([[const uint32_t test = O_FSYNC;]],
-	                [[fprinf (stdout, "%lu", test);]])],
-		[AC_MSG_NOTICE("O_FSYNC found!")
-		AC_DEFINE([USE_FSYNC], 1, "Use fs background")
-	], [
-		AC_MSG_NOTICE("O_FSYNC not found!")
-		AC_DEFINE([USE_SYNC], 1, "Use os background")
-	])],[
-	AC_MSG_NOTICE("O_FSYNC not found!")
-	AC_DEFINE([USE_SYNC], 1, "Use os background")
-  ])
+		[AC_PREPROC_IFELSE(
+		[AC_LANG_PROGRAM([[const uint32_t test = O_FSYNC;]],
+		                [[fprintf (stdout, "%lu", test);]])],
+			[AC_MSG_NOTICE("O_FSYNC found!")
+				AC_DEFINE([USE_FSYNC], 1, "Use fs background")
+			], [AC_MSG_NOTICE("O_FSYNC not found!")
+				AC_DEFINE([USE_SYNC], 1, "Use os background")
+		])],[AC_MSG_NOTICE("O_FSYNC not found!")
+			AC_DEFINE([USE_SYNC], 1, "Use os background")
+		 ]
+	)
 
-  AC_ARG_VAR([PREFIX], [Check env prefix])
-  if test "${PREFIX+set}" = set; then
+	 AC_ARG_VAR([PREFIX], [Check env prefix])
+	 if test "${PREFIX+set}" = set; then
 		AC_DEFINE_UNQUOTED([TMPDIR], ["$PREFIX/tmp"], "Tmp dir")
 		AC_MSG_NOTICE("Non-standard prefix found!")
 		AC_MSG_NOTICE([Current prefix/tmp is ${TMPDIR}])
-  else
+	 else
 		AC_DEFINE([TMPDIR], "/tmp", "Tmp dir")
-  fi
-
-  AC_DEFINE([HOME], "HOME=", "Home dir")
-  AC_DEFINE([PATH], "PATH=", "Path")
+	 fi
 fi
 
 if test "x$target_os" = "x"; then
@@ -114,8 +110,6 @@ if test "x$target_os" = "x"; then
   AC_DEFINE([BUFSIZE], [4096*1000], "Use buffer of sufficient size")
 
   AC_DEFINE([TMPDIR], "/tmp", "Tmp dir")
-  AC_DEFINE([HOME], "HOME=", "Home dir")
-  AC_DEFINE([PATH], "PATH=", "Path")
 
   AC_DEFINE([CATIMPL], 1, "Use fallback")
   AC_MSG_WARN([UNABLE TO FIND FILE TRANSFER FUNC! USING DUMMY METHOD!])
