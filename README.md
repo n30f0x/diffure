@@ -44,5 +44,11 @@ Usage: diffure | options | file ... file
 
 -d  --difftool:   Diff tool of your preference, by default uses
                   *nix diff
-                  To pass arguments to either option use as
+                  To pass arguments to either tool option use as
                   'tool -arg -arg'
+
+ToDo's:
+- fix logo printing
+- remove empty files
+- make random folders instead of files, move current to option
+- rewrite in rust?
