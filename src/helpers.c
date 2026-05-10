@@ -16,7 +16,7 @@ void *strictrealloc(void *ptr, size_t sz){
   return newptr;
 }
 
-uint sanstr(int mode, char *restrict str) {
+uint8_t sanstr(int mode, char *restrict str) {
   uint verdict = 0;  // selected mode will result in either distructive
   while (*str++)    // or nondestructive behavior
     switch (*str){
